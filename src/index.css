@@ -1,0 +1,168 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fonts loaded via preconnect for performance */
+
+/* Lácteos del Potrero / COITA Brand Design System */
+@layer base {
+  :root {
+    /* Brand Colors - COITA Inspired */
+    --background: 42 25% 96%;
+    --foreground: 25 35% 15%;
+    
+    --primary: 0 85% 55%; /* COITA Red */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 25 45% 65%; /* Terracotta */
+    --secondary-foreground: 0 0% 100%;
+    
+    --accent: 20 35% 55%; /* Warm Brown */
+    --accent-foreground: 0 0% 100%;
+    
+    --muted: 42 20% 94%;
+    --muted-foreground: 25 20% 45%;
+    
+    --card: 42 30% 98%;
+    --card-foreground: 25 35% 15%;
+    
+    --border: 42 25% 88%;
+    --input: 42 25% 88%;
+    --ring: 0 85% 55%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --popover: 42 30% 98%;
+    --popover-foreground: 25 35% 15%;
+    
+    /* Brand Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(42 30% 95%) 0%, hsl(25 25% 90%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(42 30% 98%) 0%, hsl(42 20% 94%) 100%);
+    --gradient-dark: linear-gradient(135deg, hsl(25 45% 12%) 0%, hsl(20 40% 8%) 100%);
+    --gradient-coita: linear-gradient(135deg, hsl(0 85% 55%) 0%, hsl(20 70% 50%) 100%);
+    
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 25 45% 8%;
+    --foreground: 42 25% 95%;
+    
+    --primary: 0 80% 60%;
+    --primary-foreground: 25 45% 8%;
+    
+    --secondary: 25 40% 20%;
+    --secondary-foreground: 42 25% 90%;
+    
+    --accent: 20 30% 25%;
+    --accent-foreground: 42 25% 90%;
+    
+    --muted: 25 35% 15%;
+    --muted-foreground: 42 20% 65%;
+    
+    --card: 25 40% 12%;
+    --card-foreground: 42 25% 95%;
+    
+    --border: 25 35% 18%;
+    --input: 25 35% 18%;
+    --ring: 0 80% 60%;
+    
+    --popover: 25 40% 12%;
+    --popover-foreground: 42 25% 95%;
+    
+    /* Updated dark mode gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(25 40% 10%) 0%, hsl(25 35% 12%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(25 40% 12%) 0%, hsl(25 35% 15%) 100%);
+    --gradient-dark: linear-gradient(135deg, hsl(25 45% 12%) 0%, hsl(20 40% 8%) 100%);
+    --gradient-coita: linear-gradient(135deg, hsl(0 80% 60%) 0%, hsl(20 70% 55%) 100%);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-body;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.6;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+  
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  
+  /* Skip navigation link for accessibility */
+  .skip-nav {
+    @apply absolute -top-10 left-0 bg-primary text-primary-foreground px-6 py-2 z-50 transition-all duration-200;
+  }
+  
+  .skip-nav:focus {
+    @apply top-0;
+  }
+  
+  /* Focus styles for better accessibility */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+}
+
+@layer utilities {
+  .font-heading {
+    font-family: 'Playfair Display', serif;
+  }
+  
+  .font-body {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  .gradient-dark {
+    background: var(--gradient-dark);
+  }
+  
+  .gradient-coita {
+    background: var(--gradient-coita);
+  }
+  
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .text-coita {
+    background: var(--gradient-coita);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
