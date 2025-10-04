@@ -25,6 +25,7 @@ interface GenericSectionFormProps {
   currentImageUrl?: string | null;
   imageGallery?: boolean;
   currentImages?: { url: string; alt_text: string }[];
+  setFiles?: (files: File[]) => void;
 }
 
 const updateSiteContent = async (supabase: any, updates: Array<{ section: string; element: string; content: string }>) => {
@@ -47,13 +48,41 @@ const uploadImage = async (supabase: any, file: File, imageName: string) => {
   return publicUrlData.publicUrl;
 };
 
-const updateImageRecord = async (supabase: any, name: string, section: string, url: string, alt_text: string) => {
+const updateImageRecord = async (supabase: any, name: string, section: string, url: string) => {
   const { data, error } = await supabase
     .from('images')
-    .upsert({ name, section, url, alt_text }, { onConflict: 'name' })
+    .upsert({ name, section, url }, { onConflict: 'name' })
     .select();
   if (error) throw new Error(error.message);
   return data;
+};
+
+const updateImage = async (supabase: any, imageName: string, file: File) => {
+  const { error: deleteError } = await supabase.storage.from('website_images').remove([`public/${imageName}`]);
+  // Don't throw error if file doesn't exist
+  // if (deleteError) throw new Error(deleteError.message);
+
+  const { data, error } = await supabase.storage
+    .from('website_images')
+    .upload(`public/${imageName}`, file, { cacheControl: '3600', upsert: true });
+  if (error) throw new Error(error.message);
+  const { data: publicUrlData } = supabase.storage.from('website_images').getPublicUrl(data.path);
+  const imageUrl = publicUrlData.publicUrl;
+
+  const { error: dbError } = await supabase.from('images').update({ url: imageUrl }).match({ name: imageName });
+  if (dbError) throw new Error(dbError.message);
+
+  return null;
+};
+
+const deleteImage = async (supabase: any, imageName: string) => {
+  const { error: storageError } = await supabase.storage.from('website_images').remove([`public/${imageName}`]);
+  if (storageError) throw new Error(storageError.message);
+
+  const { error: dbError } = await supabase.from('images').delete().match({ name: imageName });
+  if (dbError) throw new Error(dbError.message);
+
+  return null;
 };
 
 const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
@@ -67,6 +96,7 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
   currentImageUrl,
   imageGallery,
   currentImages,
+  setFiles,
 }) => {
   const session = useSession();
   const supabase = getSupabaseClient(session?.access_token || '');
@@ -109,7 +139,7 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
         imageUrls.map((url, index) => {
           const file = files[index];
           const imageName = `${sectionKey}/${file.name}`;
-          return updateImageRecord(supabase, imageName, sectionKey, url, form.getValues()['title'] || imageName);
+          return updateImageRecord(supabase, imageName, sectionKey, url);
         })
       );
 
@@ -119,6 +149,19 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
       queryClient.invalidateQueries({ queryKey: ['images', sectionKey] });
     },
   });
+
+  const deleteImageMutation = useMutation({
+    mutationFn: (imageName: string) => deleteImage(supabase, imageName),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['images', sectionKey] });
+      toast({ title: 'Éxito', description: 'Imagen eliminada con éxito.' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    },
+  });
+
+
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -136,12 +179,36 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
 
       if (imageGallery && values.images && values.images.length > 0) {
         await galleryMutation.mutateAsync({ files: values.images });
+        if (setFiles) {
+          setFiles([]);
+        }
       }
 
       toast({ title: 'Éxito', description: 'Contenido actualizado con éxito.' });
     } catch (error: any) {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
     }
+  };
+
+
+
+  const updateImageMutation = useMutation({
+    mutationFn: ({ imageName, file }: { imageName: string; file: File }) => updateImage(supabase, imageName, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['images', sectionKey] });
+      toast({ title: 'Éxito', description: 'Imagen actualizada con éxito.' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    },
+  });
+
+  const handleImageUpdate = (imageName: string, file: File) => {
+    updateImageMutation.mutate({ imageName, file });
+  };
+
+  const handleImageDelete = (imageName: string) => {
+    deleteImageMutation.mutate(imageName);
   };
 
   return (
@@ -202,6 +269,8 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
                       <ImageGalleryInput
                         currentImages={currentImages}
                         onChange={onChange}
+                        onImageDelete={handleImageDelete}
+                        onImageUpdate={handleImageUpdate}
                         {...rest}
                       />
                     </FormControl>

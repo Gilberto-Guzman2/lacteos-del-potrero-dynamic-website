@@ -14,7 +14,8 @@ const catalogSchema = z.object({
 
 const CatalogPage = () => {
   const { data: content, isLoading: isContentLoading } = useSiteContent('catalog');
-  const { data: images, isLoading: areImagesLoading } = useImages('catalog');
+  const { images, isLoading: areImagesLoading } = useImages('catalog');
+  const [files, setFiles] = React.useState<File[]>([]);
 
   if (isContentLoading || areImagesLoading) {
     return (
@@ -43,6 +44,7 @@ const CatalogPage = () => {
           { name: 'subtitle', label: 'Subtítulo', type: 'textarea' },
         ]}
         currentImages={images || []}
+        setFiles={setFiles}
       />
     </AdminPageWrapper>
   );

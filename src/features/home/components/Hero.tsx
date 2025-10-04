@@ -9,14 +9,11 @@ const Hero = () => {
   const { data: content, isLoading: isContentLoading } = useSiteContent('hero');
   const { images, isLoading: isImagesLoading } = useImages('hero');
 
-  console.log('Hero component images:', images);
-
   if (isContentLoading || isImagesLoading) {
     return null; // Or a skeleton loader
   }
 
   const heroImage = images?.['hero_background'];
-  console.log('Hero Image Data:', heroImage);
 
   return (
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden" role="banner">

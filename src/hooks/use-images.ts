@@ -10,19 +10,14 @@ export const useImages = (section: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('images')
-        .select('name,url,alt_text')
+        .select('name,url')
         .eq('section', section);
 
       if (error) {
         throw new Error(error.message);
       }
 
-      const images = data.reduce((acc, { name, url, alt_text }) => {
-        acc[name] = { url, alt_text };
-        return acc;
-      }, {} as Record<string, { url: string; alt_text: string }>);
-
-      console.log(`Fetched images for section ${section}:`, images); // Added console.log
+      const images = data.map(({ name, url, alt_text }) => ({ name, url, alt_text }));
 
       return images;
     },

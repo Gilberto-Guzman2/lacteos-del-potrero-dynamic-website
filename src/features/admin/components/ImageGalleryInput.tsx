@@ -1,8 +1,7 @@
-
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import { X, Edit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ImageFile extends File {
@@ -11,11 +10,18 @@ interface ImageFile extends File {
 
 interface ImageGalleryInputProps {
   onChange: (files: ImageFile[]) => void;
-  currentImages?: { url: string; alt_text: string }[];
+  onImageDelete: (imageName: string) => void;
+  onImageUpdate: (imageName: string, file: File) => void;
+  currentImages?: { name: string; url: string }[];
 }
 
-const ImageGalleryInput: React.FC<ImageGalleryInputProps> = ({ onChange, currentImages = [] }) => {
+const ImageGalleryInput = React.forwardRef<HTMLDivElement, ImageGalleryInputProps>(({ onChange, onImageDelete, onImageUpdate, currentImages = [] }, ref) => {
   const [files, setFiles] = useState<ImageFile[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    setFiles([]);
+  }, [currentImages]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles = acceptedFiles.map(file => Object.assign(file, {
@@ -36,8 +42,21 @@ const ImageGalleryInput: React.FC<ImageGalleryInputProps> = ({ onChange, current
     accept: { 'image/*': [] }
   });
 
+  const handleImageUpdate = (imageName: string) => {
+    if (fileInputRef.current) {
+      fileInputRef.current.onchange = (e: any) => {
+        const file = e.target.files[0];
+        if (file) {
+          onImageUpdate(imageName, file);
+        }
+      };
+      fileInputRef.current.click();
+    }
+  };
+
   return (
-    <div>
+    <div ref={ref}>
+      <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" />
       <div {...getRootProps()} className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-border'}`}>
         <input {...getInputProps()} />
         <p>Arrastra y suelta algunas imágenes aquí, o haz clic para seleccionar imágenes</p>
@@ -47,12 +66,32 @@ const ImageGalleryInput: React.FC<ImageGalleryInputProps> = ({ onChange, current
           {currentImages.map((image, index) => (
             <motion.div
               key={`current-${index}`}
-              className="relative"
+              className="relative group"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
             >
-              <img src={image.url} alt={image.alt_text} className="w-full h-auto rounded-lg" />
+              <img src={image.url} alt={image.name} className="w-full h-auto rounded-lg" />
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 bg-white/80 hover:bg-white"
+                  onClick={() => handleImageUpdate(image.name)}
+                >
+                  <Edit className="h-4 w-4 text-gray-800" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => onImageDelete(image.name)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </motion.div>
           ))}
           {files.map((file, index) => (
@@ -79,6 +118,6 @@ const ImageGalleryInput: React.FC<ImageGalleryInputProps> = ({ onChange, current
       </AnimatePresence>
     </div>
   );
-};
+});
 
 export default ImageGalleryInput;

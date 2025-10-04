@@ -6,7 +6,7 @@ import { useImages } from '@/hooks/use-images';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const ProductImageGallery = () => {
-  const { images: galleryImages, isLoading, error } = useImages('gallery');
+  const { images: galleryImages, isLoading, error } = useImages('catalog');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   if (isLoading) {
@@ -23,13 +23,6 @@ const ProductImageGallery = () => {
     return <div className="text-red-500 text-center">Error loading images.</div>;
   }
 
-  const images = galleryImages
-    ? Object.values(galleryImages).map((img) => ({
-        src: img.url,
-        alt: img.alt_text,
-      }))
-    : [];
-
   return (
     <div className="mb-12">
       <motion.div
@@ -38,7 +31,7 @@ const ProductImageGallery = () => {
         transition={{ duration: 0.6 }}
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
-        {images.map((image, index) => (
+        {(galleryImages || []).map((image, index) => (
           <Dialog key={index}>
             <DialogTrigger asChild>
               <motion.div
@@ -47,11 +40,11 @@ const ProductImageGallery = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ scale: 1.05 }}
                 className="aspect-square rounded-lg overflow-hidden shadow-lg cursor-pointer"
-                onClick={() => setSelectedImage(image.src)}
+                onClick={() => setSelectedImage(image.url)}
               >
                 <LazyImage
-                  src={image.src}
-                  alt={image.alt}
+                  src={image.url}
+                  alt={image.alt_text}
                   className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                   width={400}
                   height={400}
