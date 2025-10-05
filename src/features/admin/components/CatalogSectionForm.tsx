@@ -10,7 +10,6 @@ interface CatalogSectionFormProps {
   defaultValues: Record<string, any>;
   fields: Array<{ name: string; label: string; type?: string }>;
   currentImages?: { url: string; alt_text: string }[];
-  setFiles?: (files: File[]) => void;
 }
 
 const CatalogSectionForm: React.FC<CatalogSectionFormProps> = (props) => {

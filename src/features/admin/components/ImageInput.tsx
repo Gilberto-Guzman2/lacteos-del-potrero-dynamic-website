@@ -5,7 +5,7 @@ import { ImagePlus, XCircle, UploadCloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ImageInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  onChange: (...event: any[]) => void;
+  onChange: (file: File | null) => void;
   currentImageUrl?: string | null;
 }
 
@@ -13,10 +13,6 @@ const ImageInput = React.forwardRef<HTMLInputElement, ImageInputProps>(
   ({ onChange, currentImageUrl, ...props }, ref) => {
     const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null);
     const [isDragging, setIsDragging] = useState(false);
-
-    React.useEffect(() => {
-      setPreviewUrl(currentImageUrl || null);
-    }, [currentImageUrl]);
 
     const handleFileSelect = useCallback((file: File | undefined) => {
       if (file) {
@@ -28,7 +24,7 @@ const ImageInput = React.forwardRef<HTMLInputElement, ImageInputProps>(
         onChange(file);
       } else {
         setPreviewUrl(null);
-        onChange(undefined);
+        onChange(null);
       }
     }, [onChange]);
 

@@ -7,19 +7,37 @@ interface SiteContent {
 }
 
 const fetchSiteContent = async (supabase: any, section: string): Promise<SiteContent> => {
-  const { data, error } = await supabase
+  const { data: contentData, error: contentError } = await supabase
     .from('site_content')
     .select('element, content')
     .eq('section', section);
 
-  if (error) {
-    throw new Error(`Error fetching site content for section ${section}: ${error.message}`);
+  if (contentError) {
+    throw new Error(`Error fetching site content for section ${section}: ${contentError.message}`);
   }
 
-  return data.reduce((acc, item) => {
+  const content = contentData.reduce((acc, item) => {
     acc[item.element] = item.content;
     return acc;
-  }, {});
+  }, {} as SiteContent);
+
+  const { data: imageData, error: imageError } = await supabase
+    .from('images')
+    .select('url')
+    .eq('section', section)
+    .order('id', { ascending: false })
+    .limit(1);
+
+  if (imageError) {
+    // Log the error but don't throw, as content might still be usable
+    console.error(`Error fetching image for section ${section}: ${imageError.message}`);
+  }
+
+  if (imageData && imageData.length > 0) {
+    content.imageUrl = imageData[0].url;
+  }
+
+  return content;
 };
 
 export const useSiteContent = (section: string) => {

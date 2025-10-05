@@ -45,10 +45,10 @@ const uploadImage = async (supabase: any, file: File, imageName: string) => {
   return publicUrlData.publicUrl;
 };
 
-const updateImageRecord = async (supabase: any, name: string, section: string, url: string, alt_text: string) => {
+const updateImageRecord = async (supabase: any, name: string, section: string, url: string) => {
   const { data, error } = await supabase
     .from('images')
-    .upsert({ name, section, url, alt_text }, { onConflict: 'name' })
+    .upsert({ name, section, url }, { onConflict: 'name' })
     .select();
   if (error) throw new Error(error.message);
   return data;
@@ -85,7 +85,7 @@ const HomeSectionForm: React.FC<HomeSectionFormProps> = ({
   const imageMutation = useMutation({
     mutationFn: async ({ file, name }: { file: File; name: string }) => {
       const imageUrl = await uploadImage(supabase, file, name);
-      await updateImageRecord(supabase, name, sectionKey, imageUrl, form.getValues()['title'] || name);
+      await updateImageRecord(supabase, name, sectionKey, imageUrl);
       return imageUrl;
     },
     onSuccess: () => {

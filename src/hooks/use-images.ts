@@ -17,7 +17,7 @@ export const useImages = (section: string) => {
         throw new Error(error.message);
       }
 
-      const images = data.map(({ name, url, alt_text }) => ({ name, url, alt_text }));
+      const images = data.map(({ name, url }) => ({ name, url }));
 
       return images;
     },

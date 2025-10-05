@@ -10,8 +10,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from '@supabase/auth-helpers-react';
 import { getSupabaseClient } from '@/lib/supabaseClient';
 import { useToast } from '@/hooks/use-toast';
-import ImageInput from './ImageInput';
 import ImageGalleryInput from './ImageGalleryInput';
+import ImageGalleryFormField from './ImageGalleryFormField';
 import { motion } from 'framer-motion';
 
 interface GenericSectionFormProps {
@@ -21,11 +21,8 @@ interface GenericSectionFormProps {
   formSchema: z.ZodObject<any, any, any, any>;
   defaultValues: Record<string, any>;
   fields: Array<{ name: string; label: string; type?: string }>;
-  imageName?: string;
-  currentImageUrl?: string | null;
   imageGallery?: boolean;
   currentImages?: { url: string; alt_text: string }[];
-  setFiles?: (files: File[]) => void;
 }
 
 const updateSiteContent = async (supabase: any, updates: Array<{ section: string; element: string; content: string }>) => {
@@ -55,6 +52,13 @@ const updateImageRecord = async (supabase: any, name: string, section: string, u
     .select();
   if (error) throw new Error(error.message);
   return data;
+};
+
+const addImage = async (supabase: any, section: string, file: File) => {
+  const imageName = `${section}/${file.name}`;
+  const imageUrl = await uploadImage(supabase, file, imageName);
+  await updateImageRecord(supabase, imageName, section, imageUrl);
+  return imageUrl;
 };
 
 const updateImage = async (supabase: any, imageName: string, file: File) => {
@@ -92,11 +96,8 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
   formSchema,
   defaultValues,
   fields,
-  imageName,
-  currentImageUrl,
   imageGallery,
   currentImages,
-  setFiles,
 }) => {
   const session = useSession();
   const supabase = getSupabaseClient(session?.access_token || '');
@@ -112,41 +113,21 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
     mutationFn: (updates: Array<{ section: string; element: string; content: string }>) => updateSiteContent(supabase, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['site_content', sectionKey] });
+      toast({ title: 'Éxito', description: 'Contenido actualizado con éxito.' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
     },
   });
 
-  const imageMutation = useMutation({
-    mutationFn: async ({ file, name }: { file: File; name: string }) => {
-      const imageUrl = await uploadImage(supabase, file, name);
-      await updateImageRecord(supabase, name, sectionKey, imageUrl, form.getValues()['title'] || name);
-      return imageUrl;
-    },
+  const addImageMutation = useMutation({
+    mutationFn: (file: File) => addImage(supabase, sectionKey, file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['images', sectionKey] });
+      toast({ title: 'Éxito', description: 'Imagen agregada con éxito.' });
     },
-  });
-
-  const galleryMutation = useMutation({
-    mutationFn: async ({ files }: { files: File[] }) => {
-      const imageUrls = await Promise.all(
-        files.map(file => {
-          const imageName = `${sectionKey}/${file.name}`;
-          return uploadImage(supabase, file, imageName);
-        })
-      );
-
-      const imageRecords = await Promise.all(
-        imageUrls.map((url, index) => {
-          const file = files[index];
-          const imageName = `${sectionKey}/${file.name}`;
-          return updateImageRecord(supabase, imageName, sectionKey, url);
-        })
-      );
-
-      return imageRecords;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['images', sectionKey] });
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
     },
   });
 
@@ -161,36 +142,15 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
     },
   });
 
-
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const updates = fields
-        .filter(field => values[field.name] !== undefined)
-        .map(field => ({ section: sectionKey, element: field.name, content: values[field.name] }));
+    const updates = fields
+      .filter(field => values[field.name] !== undefined)
+      .map(field => ({ section: sectionKey, element: field.name, content: values[field.name] }));
 
-      if (updates.length > 0) {
-        await contentMutation.mutateAsync(updates);
-      }
-
-      if (imageName && values.image instanceof File) {
-        await imageMutation.mutateAsync({ file: values.image, name: imageName });
-      }
-
-      if (imageGallery && values.images && values.images.length > 0) {
-        await galleryMutation.mutateAsync({ files: values.images });
-        if (setFiles) {
-          setFiles([]);
-        }
-      }
-
-      toast({ title: 'Éxito', description: 'Contenido actualizado con éxito.' });
-    } catch (error: any) {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    if (updates.length > 0) {
+      await contentMutation.mutateAsync(updates);
     }
   };
-
-
 
   const updateImageMutation = useMutation({
     mutationFn: ({ imageName, file }: { imageName: string; file: File }) => updateImage(supabase, imageName, file),
@@ -208,7 +168,15 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
   };
 
   const handleImageDelete = (imageName: string) => {
+    if (!imageName) {
+        toast({ title: 'Error', description: 'Cannot delete image with invalid name.', variant: 'destructive' });
+        return;
+    }
     deleteImageMutation.mutate(imageName);
+  };
+
+  const handleImageAdd = (file: File) => {
+    addImageMutation.mutate(file);
   };
 
   return (
@@ -236,55 +204,24 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
               />
             </motion.div>
           ))}
-          {imageName && (
-            <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
-              <FormField
-                control={form.control}
-                name="image"
-                render={({ field: { onChange, value, ...rest } }) => (
-                  <FormItem>
-                    <FormLabel className="text-foreground text-sm font-medium font-bold">Imagen Actual</FormLabel>
-                    <FormControl>
-                      <ImageInput
-                        currentImageUrl={currentImageUrl}
-                        onChange={onChange}
-                        {...rest}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </motion.div>
-          )}
-          {imageGallery && (
-            <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
-              <FormField
-                control={form.control}
-                name="images"
-                render={({ field: { onChange, value, ...rest } }) => (
-                  <FormItem>
-                    <FormLabel className="text-foreground text-sm font-medium font-bold">Galería de Imágenes</FormLabel>
-                    <FormControl>
-                      <ImageGalleryInput
-                        currentImages={currentImages}
-                        onChange={onChange}
-                        onImageDelete={handleImageDelete}
-                        onImageUpdate={handleImageUpdate}
-                        {...rest}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </motion.div>
-          )}
           <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="mt-4">
-            <Button type="submit" className="w-full font-bold text-lg py-6 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full" disabled={contentMutation.isPending || imageMutation.isPending || galleryMutation.isPending}>
-              {(contentMutation.isPending || imageMutation.isPending || galleryMutation.isPending) ? 'Guardando...' : 'Guardar Cambios'}
+            <Button type="submit" className="w-full font-bold text-lg py-6 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full" disabled={contentMutation.isPending}>
+              {contentMutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
             </Button>
           </motion.div>
+          {imageGallery && (
+            <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="mt-8">
+              <ImageGalleryFormField
+                form={form}
+                name="images"
+                label="Galería de Imágenes"
+                currentImages={Array.isArray(currentImages) ? currentImages : []}
+                onImageDelete={handleImageDelete}
+                onImageUpdate={handleImageUpdate}
+                onImageAdd={handleImageAdd}
+              />
+            </motion.div>
+          )}
         </form>
       </Form>
     </motion.div>

@@ -56,9 +56,10 @@ CREATE TABLE site_content (
 
 -- RLS for site_content table
 ALTER TABLE site_content ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Allow authenticated users to read site_content" ON site_content;
-CREATE POLICY "Allow authenticated users to read site_content" ON site_content
-FOR SELECT TO authenticated
+
+DROP POLICY IF EXISTS "Allow public read access to site_content" ON site_content;
+CREATE POLICY "Allow public read access to site_content" ON site_content
+FOR SELECT
 USING (true);
 
 DROP POLICY IF EXISTS "Allow authenticated users to insert site_content" ON site_content;

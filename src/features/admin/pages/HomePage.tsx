@@ -9,13 +9,13 @@ import AdminPageWrapper from '../components/AdminPageWrapper';
 const homeSchema = z.object({
   title: z.string().min(1, 'El título es requerido'),
   subtitle: z.string().min(1, 'El subtítulo es requerido'),
-  cta: z.string().min(1, 'El texto del botón CTA es requerido'),
+  ctaText: z.string().min(1, 'El texto del botón CTA es requerido'),
   image: z.any().optional(),
 });
 
 const HomePage = () => {
-  const { data: content, isLoading: isContentLoading } = useSiteContent('hero');
-  const { images: homeImages, isLoading: areImagesLoading } = useImages('hero');
+  const { data: content, isLoading: isContentLoading } = useSiteContent('home');
+  const { images: homeImages, isLoading: areImagesLoading } = useImages('home');
 
   if (isContentLoading || areImagesLoading) {
     return (
@@ -31,22 +31,22 @@ const HomePage = () => {
       description="Actualiza el contenido de la sección principal (Hero) de la página de inicio."
     >
       <HomeSectionForm
-        sectionKey="hero"
+        sectionKey="home"
         sectionTitle="Sección Principal (Hero)"
         sectionDescription="Actualiza el título, subtítulo, texto del botón CTA y la imagen de fondo."
         formSchema={homeSchema}
         defaultValues={{
           title: content?.title || '',
           subtitle: content?.subtitle || '',
-          cta: content?.cta || '',
+          ctaText: content?.ctaText || '',
         }}
         fields={[
           { name: 'title', label: 'Título' },
           { name: 'subtitle', label: 'Subtítulo', type: 'textarea' },
-          { name: 'cta', label: 'Texto del Botón CTA' },
+          { name: 'ctaText', label: 'Texto del Botón CTA' },
         ]}
-        imageName="hero_background"
-        currentImageUrl={homeImages?.hero_background?.url || null}
+        imageName="home_background"
+        currentImageUrl={homeImages?.find(img => img.name === 'home_background')?.url || null}
       />
     </AdminPageWrapper>
   );
