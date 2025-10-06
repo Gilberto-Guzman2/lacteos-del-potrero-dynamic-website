@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import * as z from 'zod';
 import { useSiteContent } from '@/hooks/use-site-content';
 import { useFaqs } from '@/hooks/use-faqs';
@@ -77,21 +78,20 @@ const FAQPage = () => {
         ]}
       />
 
-      <Card className="border-none shadow-lg mt-8">
+      <Card className="bg-card/50 backdrop-blur-lg border border-border/50 rounded-lg shadow-2xl overflow-hidden mt-8">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-2xl font-heading text-gradient">Gestión de FAQs</CardTitle>
+            <CardTitle className="text-3xl font-heading font-bold text-primary">Gestión de FAQs</CardTitle>
             <CardDescription>Añade, edita o elimina preguntas frecuentes.</CardDescription>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-2"><PlusCircle className="h-5 w-5"/> Añadir FAQ</Button>
+              <Button className="gap-2 font-bold text-lg py-2 px-4 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full"><PlusCircle className="h-5 w-5"/> Añadir FAQ</Button>
             </DialogTrigger>
-            <DialogContent className="bg-card">
-              <DialogHeader>
-                <DialogTitle className="font-heading text-2xl text-gradient">Añadir Nueva Pregunta Frecuente</DialogTitle>
-              </DialogHeader>
-              <AddFAQForm onSuccess={handleAddFaqSuccess} />
+                          <DialogContent className="bg-card">
+                            <DialogHeader>
+                              <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-3xl font-heading font-bold text-primary">Añadir Nueva Pregunta Frecuente</motion.h1>
+                            </DialogHeader>              <AddFAQForm onSuccess={handleAddFaqSuccess} />
             </DialogContent>
           </Dialog>
         </CardHeader>
@@ -122,7 +122,7 @@ const FAQPage = () => {
                           </DialogTrigger>
                           <DialogContent className="bg-card">
                             <DialogHeader>
-                              <DialogTitle className="font-heading text-2xl text-gradient">Editar Pregunta Frecuente</DialogTitle>
+                              <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-3xl font-heading font-bold text-primary">Editar Pregunta Frecuente</motion.h1>
                             </DialogHeader>
                             {selectedFaq && <EditFAQForm faq={selectedFaq} onSuccess={handleEditFaqSuccess} />}
                           </DialogContent>

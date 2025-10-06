@@ -6,7 +6,7 @@ import { useImages } from '@/hooks/use-images';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const AboutSection = () => {
-  const { content, isLoading: isContentLoading } = useSiteContent('about');
+  const { data: content, isLoading: isContentLoading } = useSiteContent('about');
   const { images, isLoading: isImagesLoading } = useImages('about');
 
   return (
@@ -20,11 +20,11 @@ const AboutSection = () => {
             className="space-y-6"
           >
             <div role="heading" aria-level="2" className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-gradient">
-              {isContentLoading ? <Skeleton className="h-12 w-1/2" /> : content?.title || 'Sobre Nosotros'}
+              {isContentLoading ? <Skeleton className="h-12 w-1/2" /> : content?.title || 'Lorem Ipsum'}
             </div>
             <div className="w-24 h-1 bg-primary rounded-full" />
             <div className="text-lg text-muted-foreground leading-relaxed">
-              {isContentLoading ? <Skeleton className="h-24 w-full" /> : content?.subtitle || 'Una breve historia sobre nuestra pasión por los lácteos.'}
+              {isContentLoading ? <Skeleton className="h-24 w-full" /> : content?.subtitle || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.'}
             </div>
             <div className="grid grid-cols-2 gap-6 mt-8">
               <div className="text-center">
@@ -46,7 +46,7 @@ const AboutSection = () => {
           >
             <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
               {isImagesLoading ? <Skeleton className="w-full h-full" /> : <img 
-                src={images?.find(img => img.name === 'about_us_image')?.url || ''}
+                src={images?.find(img => img.name === 'about_us_image')?.url || '/images/cheese-with-bread.png'}
                 alt={content?.title || 'Imagen de la sección sobre nosotros'}
                 className="w-full h-full object-cover"
               />}
@@ -71,7 +71,7 @@ const AboutSection = () => {
               <Target className="w-8 h-8 text-primary" />
             </div>
             <div role="heading" aria-level="3" className="font-heading text-xl font-bold mb-3 text-gradient">Misión</div>
-            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.mission}</div>
+            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.mission || 'Lorem ipsum dolor sit amet.'}</div>
           </motion.div>
 
           <motion.div
@@ -84,7 +84,7 @@ const AboutSection = () => {
               <Eye className="w-8 h-8 text-primary" />
             </div>
             <div role="heading" aria-level="3" className="font-heading text-xl font-bold mb-3 text-gradient">Visión</div>
-            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.vision}</div>
+            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.vision || 'Lorem ipsum dolor sit amet.'}</div>
           </motion.div>
 
           <motion.div
@@ -97,7 +97,7 @@ const AboutSection = () => {
               <Heart className="w-8 h-8 text-primary" />
             </div>
             <div role="heading" aria-level="3" className="font-heading text-xl font-bold mb-3 text-gradient">Valores</div>
-            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.values}</div>
+            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.values || 'Lorem ipsum dolor sit amet.'}</div>
           </motion.div>
         </div>
       </div>

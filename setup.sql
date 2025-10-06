@@ -77,14 +77,6 @@ CREATE POLICY "Allow authenticated users to delete site_content" ON site_content
 FOR DELETE TO authenticated
 USING (true);
 
--- Default content for about page
-INSERT INTO site_content (section, element, content)
-VALUES 
-  ('about', 'title', 'Sobre Nosotros'),
-  ('about', 'subtitle', 'Nuestra historia y compromiso con la calidad.'),
-  ('about', 'mission', 'Nuestra misión es...'),
-  ('about', 'vision', 'Nuestra visión es...'),
-  ('about', 'values', 'Nuestros valores son...');
 
 -- Create a table for images
 CREATE TABLE images (
@@ -122,6 +114,13 @@ CREATE TABLE faqs (
   question TEXT NOT NULL,
   answer TEXT NOT NULL
 );
+
+-- RLS for faqs table
+ALTER TABLE faqs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow public read access to faqs" ON faqs;
+CREATE POLICY "Allow public read access to faqs" ON faqs
+FOR SELECT
+USING (true);
 
 -- Create a bucket for images
 INSERT INTO storage.buckets (id, name, public)

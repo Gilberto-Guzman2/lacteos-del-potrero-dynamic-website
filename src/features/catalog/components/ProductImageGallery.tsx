@@ -31,41 +31,61 @@ const ProductImageGallery = () => {
         transition={{ duration: 0.6 }}
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
-        {(galleryImages || []).map((image, index) => (
-          <Dialog key={index}>
-            <DialogTrigger asChild>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                className="aspect-square rounded-lg overflow-hidden shadow-lg cursor-pointer"
-                onClick={() => setSelectedImage(image.url)}
-              >
-                <LazyImage
-                  src={image.url}
-                  alt={image.alt_text}
-                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                  width={400}
-                  height={400}
-                />
-              </motion.div>
-            </DialogTrigger>
-            <DialogContent className="max-w-xl max-h-[70vh]">
-              {selectedImage && (
-                <div className="relative w-full h-full rounded-md overflow-hidden">
+        {galleryImages && galleryImages.length > 0 ? (
+          galleryImages.map((image, index) => (
+            <Dialog key={index}>
+              <DialogTrigger asChild>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="aspect-square rounded-lg overflow-hidden shadow-lg cursor-pointer"
+                  onClick={() => setSelectedImage(image.url)}
+                >
                   <LazyImage
-                    src={selectedImage}
-                    alt="Enlarged product image"
-                    className="object-contain w-full h-full"
-                    width={1200}
-                    height={1200}
+                    src={image.url}
+                    alt={image.alt_text}
+                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                    width={400}
+                    height={400}
                   />
-                </div>
-              )}
-            </DialogContent>
-          </Dialog>
-        ))}
+                </motion.div>
+              </DialogTrigger>
+              <DialogContent className="max-w-xl max-h-[70vh]">
+                {selectedImage && (
+                  <div className="relative w-full h-full rounded-md overflow-hidden">
+                    <LazyImage
+                      src={selectedImage}
+                      alt="Enlarged product image"
+                      className="object-contain w-full h-full"
+                      width={1200}
+                      height={1200}
+                    />
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+          ))
+        ) : (
+          Array.from({ length: 4 }).map((_, index) => (
+            <motion.div
+              key={`placeholder-${index}`}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="aspect-square rounded-lg overflow-hidden shadow-lg"
+            >
+              <LazyImage
+                src={'/images/cheese-with-bread.png'}
+                alt="Placeholder Image"
+                className="w-full h-full object-cover"
+                width={400}
+                height={400}
+              />
+            </motion.div>
+          ))
+        )}
       </motion.div>
     </div>
   );

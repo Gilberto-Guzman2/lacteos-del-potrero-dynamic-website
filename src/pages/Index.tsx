@@ -6,7 +6,7 @@ import Navbar from '@/features/navigation/components/Navbar';
 import Hero from '@/features/home/components/Hero';
 import ProductGrid from '@/features/catalog/components/ProductGrid';
 import OrdersSection from '@/features/orders/components/OrdersSection';
-import AboutSection from '@/features/about/components/AboutSection';
+import AboutSection from '@/features/about/components/AboutSectionNew';
 import FAQSection from '@/features/faq/components/FAQSection';
 import ContactSection from '@/features/contact/components/ContactSection';
 import Footer from '@/features/shared/components/Footer';

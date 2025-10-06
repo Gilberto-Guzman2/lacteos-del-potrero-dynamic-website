@@ -5,14 +5,12 @@ import AdminPageWrapper from '../components/AdminPageWrapper';
 import AboutSectionForm from '../components/AboutSectionForm'; // Reusing for simplicity, rename if needed
 
 const footerSchema = z.object({
-  company: z.string().min(1, 'El nombre de la compañía es requerido'),
-  rights: z.string().min(1, 'Los derechos de autor son requeridos'),
   facebook_url: z.string().url('Debe ser una URL válida').or(z.literal('')).optional(),
   instagram_url: z.string().url('Debe ser una URL válida').or(z.literal('')).optional(),
 });
 
 const FooterPage = () => {
-  const { content, isLoading } = useSiteContent('footer');
+  const { data: content, isLoading } = useSiteContent('footer');
 
   if (isLoading) {
     return (
@@ -25,22 +23,18 @@ const FooterPage = () => {
   return (
     <AdminPageWrapper
       title="Editar Pie de Página"
-      description="Actualiza el contenido y enlaces del pie de página."
+      description="Actualiza los enlaces a redes sociales del pie de página."
     >
       <AboutSectionForm
         sectionKey="footer"
-        sectionTitle="Contenido del Pie de Página"
-        sectionDescription="Actualiza el nombre de la compañía, derechos de autor y enlaces a redes sociales."
+        sectionTitle="Redes Sociales"
+        sectionDescription="Actualiza los enlaces a Facebook e Instagram."
         formSchema={footerSchema}
         defaultValues={{
-          company: content?.company || '',
-          rights: content?.rights || '',
           facebook_url: content?.facebook_url || '',
           instagram_url: content?.instagram_url || '',
         }}
         fields={[
-          { name: 'company', label: 'Nombre de la Compañía' },
-          { name: 'rights', label: 'Derechos de Autor' },
           { name: 'facebook_url', label: 'URL de Facebook', type: 'url' },
           { name: 'instagram_url', label: 'URL de Instagram', type: 'url' },
         ]}

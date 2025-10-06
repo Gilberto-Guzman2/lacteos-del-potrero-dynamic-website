@@ -25,13 +25,13 @@ const OrdersSection = () => {
             </>
           ) : (
             <>
-              <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gradient">{content?.title}</h2>
+              <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gradient">{content?.title || 'Lorem Ipsum'}</h2>
               <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-8" />
-              <p className="text-lg text-muted-foreground mb-8">{content?.subtitle}</p>
+              <p className="text-lg text-muted-foreground mb-8">{content?.subtitle || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'}</p>
               <a href={content?.whatsapp_link} target="_blank" rel="noopener noreferrer">
                 <Button size="lg" className="gap-2 font-bold text-lg py-6 px-8 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full">
                   <FaWhatsapp className="h-6 w-6" />
-                  {content?.whatsapp_button}
+                  {content?.whatsapp_button || 'Lorem Ipsum'}
                 </Button>
               </a>
             </>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -54,37 +55,49 @@ const AddFAQForm: React.FC<AddFAQFormProps> = ({ onSuccess }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="question"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Pregunta</FormLabel>
-              <FormControl>
-                <Input placeholder="Escribe la pregunta" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="answer"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Respuesta</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Escribe la respuesta" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" disabled={mutation.isPending}>
-          {mutation.isPending ? 'Añadiendo...' : 'Añadir Pregunta Frecuente'}
-        </Button>
-      </form>
+      <motion.form 
+        variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+        initial="hidden"
+        animate="visible"
+        onSubmit={form.handleSubmit(onSubmit)} 
+        className="space-y-4"
+      >
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          <FormField
+            control={form.control}
+            name="question"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-foreground text-sm font-medium font-bold">Pregunta</FormLabel>
+                <FormControl>
+                  <Input {...field} className="bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          <FormField
+            control={form.control}
+            name="answer"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-foreground text-sm font-medium font-bold">Respuesta</FormLabel>
+                <FormControl>
+                  <Textarea {...field} className="bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          <Button type="submit" className="w-full font-bold text-lg py-3 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full" disabled={mutation.isPending}>
+            {mutation.isPending ? 'Añadiendo...' : 'Añadir Pregunta Frecuente'}
+          </Button>
+        </motion.div>
+      </motion.form>
     </Form>
   );
 };

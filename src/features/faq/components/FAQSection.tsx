@@ -48,20 +48,33 @@ const FAQSection = () => {
                 </AccordionItem>
               ))
             ) : (
-              faqs?.map((faq, index) => (
-                <AccordionItem 
-                  key={index} 
-                  value={`item-${index}`}
-                  className="bg-card rounded-lg px-6 border shadow-sm"
-                >
-                  <AccordionTrigger className="text-left font-semibold hover:no-underline py-4">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-4">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))
+              faqs && faqs.length > 0 ? (
+                faqs.map((faq, index) => (
+                  <AccordionItem 
+                    key={index} 
+                    value={`item-${index}`}
+                    className="bg-card rounded-lg px-6 border shadow-sm"
+                  >
+                    <AccordionTrigger className="text-left font-semibold hover:no-underline py-4">
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground pb-4">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))
+              ) : (
+                Array.from({ length: 3 }).map((_, index) => (
+                  <AccordionItem key={`placeholder-${index}`} value={`placeholder-${index}`} className="bg-card rounded-lg px-6 border shadow-sm">
+                    <AccordionTrigger className="text-left font-semibold hover:no-underline py-4">
+                      Lorem ipsum dolor sit amet?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground pb-4">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.
+                    </AccordionContent>
+                  </AccordionItem>
+                ))
+              )
             )}
           </Accordion>
         </motion.div>

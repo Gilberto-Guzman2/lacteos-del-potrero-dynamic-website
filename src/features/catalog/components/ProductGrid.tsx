@@ -109,11 +109,11 @@ const ProductGrid = () => {
           className="text-center mb-16"
         >
           <div role="heading" aria-level="2" className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gradient">
-            {isContentLoading ? <Skeleton className="h-12 w-1/2 mx-auto" /> : content?.title}
+            {isContentLoading ? <Skeleton className="h-12 w-1/2 mx-auto" /> : content?.title || 'Lorem Ipsum'}
           </div>
           <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-8" />
           <div className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {isContentLoading ? <Skeleton className="h-6 w-3/4 mx-auto" /> : content?.subtitle}
+            {isContentLoading ? <Skeleton className="h-6 w-3/4 mx-auto" /> : content?.subtitle || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'}
           </div>
         </motion.div>
 
@@ -199,7 +199,7 @@ const ProductGrid = () => {
                       <Card className="gradient-card border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
                         <div className="relative">
                           <img
-                            src={product.image_url}
+                            src={product.image_url || '/images/cheese-with-bread.png'}
                             alt={product.name}
                             className="w-full h-full rounded-md mb-4"
                           />
@@ -231,7 +231,7 @@ const ProductGrid = () => {
                       <>
                         <div className="flex items-center justify-center">
                           <img
-                            src={selectedProduct.image_url}
+                            src={selectedProduct.image_url || '/images/cheese-with-bread.png'}
                             alt={selectedProduct.name}
                             className="rounded-lg shadow-lg object-contain max-h-[70vh]"
                           />
@@ -255,15 +255,38 @@ const ProductGrid = () => {
         </div>
 
         {!isLoading && filteredProducts.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12"
-          >
-            <p className="text-muted-foreground text-lg">
-              No se encontraron productos que coincidan con tu búsqueda.
-            </p>
-          </motion.div>
+          <div className="col-span-full grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Card key={`placeholder-${i}`} className="gradient-card border-0 shadow-lg h-full">
+                <div className="relative">
+                  <img
+                    src={'/images/cheese-with-bread.png'}
+                    alt="Lorem Ipsum"
+                    className="w-full h-full rounded-md mb-4"
+                  />
+                  <Badge className="absolute top-2 right-2 text-xs">
+                    1kg
+                  </Badge>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg mb-2 text-foreground line-clamp-2">
+                    Lorem Ipsum
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  </p>
+                  <div className="flex items-center justify-between mt-auto">
+                    <span className="text-primary font-bold text-lg">
+                      $99.99
+                    </span>
+                    <Badge variant="outline" className="text-xs">
+                      Lorem
+                    </Badge>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
     </section>

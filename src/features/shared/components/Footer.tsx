@@ -18,7 +18,7 @@ const Footer = () => {
           className="text-center"
         >
           <div className="font-heading text-2xl font-bold mb-4">
-            {isLoading ? <Skeleton className="h-8 w-48 mx-auto" /> : content?.company}
+            Lácteos del Potrero
           </div>
           
           {/* Social Media Links */}
@@ -46,7 +46,7 @@ const Footer = () => {
           </div>
           
           <div className="text-sm opacity-70">
-          © {currentYear} {isLoading ? <Skeleton className="h-4 w-32 inline-block" /> : <span>{content?.company}</span>}. {isLoading ? <Skeleton className="h-4 w-48 inline-block" /> : <span>{content?.rights}</span>}.
+            © {currentYear} Lácteos del Potrero. All rights reserved.
           </div>
         </motion.div>
       </div>
