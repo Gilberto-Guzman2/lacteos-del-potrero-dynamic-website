@@ -52,7 +52,7 @@ const SidebarContent = ({ isSidebarOpen, setIsSidebarOpen }) => {
         className="flex-grow overflow-y-auto space-y-2 -mr-2 pr-2"
       >
         {navLinks.map(({ to, icon: Icon, label }) => (
-          <motion.div key={to} variants={variants}>
+          <motion.div key={to} variants={variants} className="mx-2">
             <NavLink
               to={to}
               end={to === '/admin'}

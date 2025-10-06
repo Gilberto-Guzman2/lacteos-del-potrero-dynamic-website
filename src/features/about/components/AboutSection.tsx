@@ -20,20 +20,20 @@ const AboutSection = () => {
             className="space-y-6"
           >
             <div role="heading" aria-level="2" className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-gradient">
-              {isContentLoading ? <Skeleton className="h-12 w-1/2" /> : content?.title}
+              {isContentLoading ? <Skeleton className="h-12 w-1/2" /> : content?.title || 'Sobre Nosotros'}
             </div>
             <div className="w-24 h-1 bg-primary rounded-full" />
             <div className="text-lg text-muted-foreground leading-relaxed">
-              {isContentLoading ? <Skeleton className="h-24 w-full" /> : content?.description}
+              {isContentLoading ? <Skeleton className="h-24 w-full" /> : content?.subtitle || 'Una breve historia sobre nuestra pasión por los lácteos.'}
             </div>
             <div className="grid grid-cols-2 gap-6 mt-8">
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary mb-2">50+</div>
-                <div className="text-sm text-muted-foreground">{isContentLoading ? <Skeleton className="h-4 w-24 mx-auto" /> : content?.years}</div>
+                <div className="text-sm text-muted-foreground">Years of experience</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary mb-2">100%</div>
-                <div className="text-sm text-muted-foreground">{isContentLoading ? <Skeleton className="h-4 w-24 mx-auto" /> : content?.natural}</div>
+                <div className="text-sm text-muted-foreground">Natural</div>
               </div>
             </div>
           </motion.div>
@@ -46,8 +46,8 @@ const AboutSection = () => {
           >
             <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
               {isImagesLoading ? <Skeleton className="w-full h-full" /> : <img 
-                src={images?.about_image?.url || ''}
-                alt={images?.about_image?.alt_text || ''}
+                src={images?.find(img => img.name === 'about_us_image')?.url || ''}
+                alt={content?.title || 'Imagen de la sección sobre nosotros'}
                 className="w-full h-full object-cover"
               />}
             </div>
@@ -70,8 +70,8 @@ const AboutSection = () => {
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Target className="w-8 h-8 text-primary" />
             </div>
-            <div role="heading" aria-level="3" className="font-heading text-xl font-bold mb-3 text-gradient">{isContentLoading ? <Skeleton className="h-6 w-1/2 mx-auto" /> : content?.mission_title}</div>
-            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.mission_description}</div>
+            <div role="heading" aria-level="3" className="font-heading text-xl font-bold mb-3 text-gradient">Misión</div>
+            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.mission}</div>
           </motion.div>
 
           <motion.div
@@ -83,8 +83,8 @@ const AboutSection = () => {
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Eye className="w-8 h-8 text-primary" />
             </div>
-            <div role="heading" aria-level="3" className="font-heading text-xl font-bold mb-3 text-gradient">{isContentLoading ? <Skeleton className="h-6 w-1/2 mx-auto" /> : content?.vision_title}</div>
-            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.vision_description}</div>
+            <div role="heading" aria-level="3" className="font-heading text-xl font-bold mb-3 text-gradient">Visión</div>
+            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.vision}</div>
           </motion.div>
 
           <motion.div
@@ -96,8 +96,8 @@ const AboutSection = () => {
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Heart className="w-8 h-8 text-primary" />
             </div>
-            <div role="heading" aria-level="3" className="font-heading text-xl font-bold mb-3 text-gradient">{isContentLoading ? <Skeleton className="h-6 w-1/2 mx-auto" /> : content?.values_title}</div>
-            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.values_description}</div>
+            <div role="heading" aria-level="3" className="font-heading text-xl font-bold mb-3 text-gradient">Valores</div>
+            <div className="text-muted-foreground">{isContentLoading ? <Skeleton className="h-16 w-full" /> : content?.values}</div>
           </motion.div>
         </div>
       </div>

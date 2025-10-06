@@ -109,6 +109,10 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
     defaultValues,
   });
 
+  React.useEffect(() => {
+    form.reset(defaultValues);
+  }, [defaultValues, form]);
+
   const contentMutation = useMutation({
     mutationFn: (updates: Array<{ section: string; element: string; content: string }>) => updateSiteContent(supabase, updates),
     onSuccess: () => {

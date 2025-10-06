@@ -1,25 +1,42 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useSiteContent } from '@/hooks/use-site-content';
-import { useImages } from '@/hooks/use-images';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { FaWhatsapp } from 'react-icons/fa';
 
 const OrdersSection = () => {
-  const { data: content, isLoading: isContentLoading } = useSiteContent('orders_page');
-  const { images, isLoading: isImagesLoading } = useImages('orders_page');
-
-  if (isContentLoading || isImagesLoading) {
-    return <Skeleton className="h-80 w-full" />;
-  }
+  const { data: content, isLoading } = useSiteContent('orders_page');
 
   return (
-    <section id="orders" className="py-20">
+    <section id="orders" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold tracking-tight mb-4">{content?.title || 'Pedidos y Entregas'}</h2>
-          <p className="text-lg text-muted-foreground mb-8">{content?.description || 'Información sobre cómo realizar pedidos y nuestras políticas de entrega.'}</p>
-          <Button size="lg">{content?.cta_text || 'Hacer un Pedido'}</Button>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto"
+        >
+          {isLoading ? (
+            <>
+              <Skeleton className="h-12 w-2/3 mx-auto mb-4" />
+              <Skeleton className="h-6 w-full mx-auto mb-8" />
+              <Skeleton className="h-12 w-48 mx-auto" />
+            </>
+          ) : (
+            <>
+              <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gradient">{content?.title}</h2>
+              <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-8" />
+              <p className="text-lg text-muted-foreground mb-8">{content?.subtitle}</p>
+              <a href={content?.whatsapp_link} target="_blank" rel="noopener noreferrer">
+                <Button size="lg" className="gap-2 font-bold text-lg py-6 px-8 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full">
+                  <FaWhatsapp className="h-6 w-6" />
+                  {content?.whatsapp_button}
+                </Button>
+              </a>
+            </>
+          )}
+        </motion.div>
       </div>
     </section>
   );
