@@ -1,12 +1,11 @@
 import { createContext, useContext } from 'react';
+import { Product } from '../types/Product';
 
 interface AdminPageContextType {
-  isAddDialogOpen: boolean;
-  setIsAddDialogOpen: (isOpen: boolean) => void;
-  isEditDialogOpen: boolean;
-  setIsEditDialogOpen: (isOpen: boolean) => void;
-  selectedProduct: any | null;
-  setSelectedProduct: (product: any | null) => void;
+  isDialogOpen: boolean;
+  setIsDialogOpen: (isOpen: boolean) => void;
+  selectedProduct: Product | null;
+  setSelectedProduct: (product: Product | null) => void;
 }
 
 export const AdminPageContext = createContext<AdminPageContextType | undefined>(undefined);

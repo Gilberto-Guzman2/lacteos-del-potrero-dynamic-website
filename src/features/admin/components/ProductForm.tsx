@@ -10,27 +10,16 @@ import { supabase } from '@/lib/supabaseClient';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useCategories } from '@/hooks/use-categories';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Product } from '../types/Product';
 
 const productSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
-  category_id: z.coerce.number().min(1, 'La categoría es requerida'),
   description: z.string().min(1, 'La descripción es requerida'),
   price: z.coerce.number().min(0, 'El precio debe ser un número positivo'),
   weight: z.string().min(1, 'El peso es requerido'),
   image: z.instanceof(FileList).optional(),
 });
-
-interface Product {
-    id?: number;
-    name: string;
-    category_id: number;
-    description: string;
-    price: number;
-    weight: string;
-    image_url?: string;
-}
 
 interface ProductFormProps {
   product?: Product;
@@ -41,13 +30,11 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSuccess }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { categories, isLoading: isCategoriesLoading } = useCategories();
 
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
     defaultValues: {
       ...product,
-      category_id: product?.category_id || undefined,
     },
   });
 
@@ -76,8 +63,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSuccess }) => {
         }
       }
 
-      const { name, category_id, description, price, weight } = values;
-      const productData = { name, category_id, description, price, weight, image_url: imageUrl };
+      const { name, description, price, weight } = values;
+      const productData = { name, description, price, weight, image_url: imageUrl };
 
       if (product?.id) {
         const { error } = await supabase.from('products').update(productData).match({ id: product.id });
@@ -132,37 +119,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSuccess }) => {
             <motion.div variants={itemVariants}>
                 <FormField
                     control={form.control}
-                    name="category_id"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className="font-heading text-gradient text-lg">Categoría</FormLabel>
-                        <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value?.toString()}>
-                            <FormControl>
-                                <SelectTrigger className="bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all">
-                                    <SelectValue placeholder="Selecciona una categoría" />
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                {isCategoriesLoading ? (
-                                    <SelectItem value="loading" disabled>Cargando categorías...</SelectItem>
-                                ) : (
-                                    categories?.map((category) => (
-                                        <SelectItem key={category.id} value={category.id.toString()}>
-                                            {category.name}
-                                        </SelectItem>
-                                    ))
-                                )}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-                <FormField
-                    control={form.control}
                     name="price"
                     render={({ field }) => (
                     <FormItem>
@@ -183,9 +139,22 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSuccess }) => {
                     render={({ field }) => (
                     <FormItem>
                         <FormLabel className="font-heading text-gradient text-lg">Peso</FormLabel>
-                        <FormControl>
-                        <Input placeholder="1 kg" {...field} className="bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all" />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                                <SelectTrigger className="bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all">
+                                    <SelectValue placeholder="Selecciona un peso" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="250g">250g</SelectItem>
+                                <SelectItem value="500g">500g</SelectItem>
+                                <SelectItem value="1kg">1kg</SelectItem>
+                                <SelectItem value="2kg">2kg</SelectItem>
+                                <SelectItem value="3kg">3kg</SelectItem>
+                                <SelectItem value="4kg">4kg</SelectItem>
+                                <SelectItem value="5kg">5kg</SelectItem>
+                            </SelectContent>
+                        </Select>
                         <FormMessage />
                     </FormItem>
                     )}

@@ -11,16 +11,7 @@ import ProductImageGallery from './ProductImageGallery';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  weight: string;
-  image_url: string;
-  category: string;
-}
+import { Product } from '../../admin/types/Product';
 
 const fetchProducts = async () => {
   const { data, error } = await supabase.from('products').select('*');
@@ -30,17 +21,9 @@ const fetchProducts = async () => {
   return data;
 };
 
-const categoryDisplayNames = {
-  'doble-crema': 'Quesos Doble Crema',
-  'oaxaca': 'Quesos Oaxaca',
-  'manchego': 'Quesos Manchego',
-  'specialty': 'Quesos Especiales',
-};
-
 const ProductGrid = () => {
   const { data: content, isLoading: isContentLoading } = useSiteContent('catalog');
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
   const [sizeFilter, setSizeFilter] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -61,10 +44,6 @@ const ProductGrid = () => {
       );
     }
 
-    if (category && category !== 'all') {
-      filtered = filtered.filter(product => product.category === category);
-    }
-
     if (priceRange && priceRange !== 'all') {
       filtered = filtered.filter(product => {
         switch (priceRange) {
@@ -81,23 +60,11 @@ const ProductGrid = () => {
     }
 
     if (sizeFilter && sizeFilter !== 'all') {
-      filtered = filtered.filter(product => {
-        const weight = product.weight.toLowerCase();
-        switch (sizeFilter) {
-          case 'small':
-            return weight.includes('200') || weight.includes('400');
-          case 'medium':
-            return weight.includes('500');
-          case 'large':
-            return weight.includes('1 kg') || weight.includes('1kg');
-          default:
-            return true;
-        }
-      });
+        filtered = filtered.filter(product => product.weight === sizeFilter);
     }
 
     return filtered;
-  }, [search, category, priceRange, sizeFilter, products]);
+  }, [search, priceRange, sizeFilter, products]);
 
   return (
     <section id="catalog" className="py-20 bg-muted/30">
@@ -136,28 +103,19 @@ const ProductGrid = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           </div>
 
-          <Select onValueChange={setCategory} value={category}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Filtrar por categoría" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas las categorías</SelectItem>
-              <SelectItem value="doble-crema">Quesos Doble Crema</SelectItem>
-              <SelectItem value="oaxaca">Quesos Oaxaca</SelectItem>
-              <SelectItem value="manchego">Quesos Manchego</SelectItem>
-              <SelectItem value="specialty">Quesos Especiales</SelectItem>
-            </SelectContent>
-          </Select>
-
           <Select onValueChange={setSizeFilter} value={sizeFilter}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filtrar por tamaño" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos los tamaños</SelectItem>
-              <SelectItem value="small">Pequeño (200-400g)</SelectItem>
-              <SelectItem value="medium">Mediano (500g)</SelectItem>
-              <SelectItem value="large">Grande (1kg)</SelectItem>
+                <SelectItem value="all">Todos los tamaños</SelectItem>
+                <SelectItem value="250g">250g</SelectItem>
+                <SelectItem value="500g">500g</SelectItem>
+                <SelectItem value="1kg">1kg</SelectItem>
+                <SelectItem value="2kg">2kg</SelectItem>
+                <SelectItem value="3kg">3kg</SelectItem>
+                <SelectItem value="4kg">4kg</SelectItem>
+                <SelectItem value="5kg">5kg</SelectItem>
             </SelectContent>
           </Select>
 
@@ -218,9 +176,6 @@ const ProductGrid = () => {
                             <span className="text-primary font-bold text-lg">
                               ${product.price.toFixed(2)}
                             </span>
-                            <Badge variant="outline" className="text-xs">
-                              {categoryDisplayNames[product.category]}
-                            </Badge>
                           </div>
                         </div>
                       </Card>
@@ -244,7 +199,6 @@ const ProductGrid = () => {
                           <p className="text-muted-foreground text-base">{selectedProduct.description}</p>
                           <div className="flex items-center justify-between pt-4">
                             <span className="text-primary font-bold text-2xl">${selectedProduct.price.toFixed(2)}</span>
-                            <Badge variant="secondary" className="text-sm">{categoryDisplayNames[selectedProduct.category]}</Badge>
                           </div>
                         </div>
                       </>

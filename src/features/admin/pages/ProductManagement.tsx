@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabaseClient';
@@ -7,30 +7,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import AddProductForm from '../components/AddProductForm';
-import EditProductForm from '../components/EditProductForm';
+import ProductForm from '../components/ProductForm';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Edit, Trash2 } from 'lucide-react';
 import { useAdminPage } from '../hooks/use-admin-page';
-import { useCategories } from '@/hooks/use-categories';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-
-interface Product {
-    id: number;
-    name: string;
-    description: string;
-    category_id: number;
-    price: number;
-    weight: string;
-    image_url: string;
-    categories: { name: string };
-}
+import { Product } from '../types/Product';
 
 const fetchProducts = async () => {
-  const { data, error } = await supabase.from('products').select('*, categories(name)').order('id');
+  const { data, error } = await supabase.from('products').select('*').order('id');
   if (error) throw new Error(error.message);
   return data;
 };
@@ -52,9 +37,7 @@ const deleteProduct = async ({ id, image_url }: { id: number; image_url: string 
 const ProductManagement = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { isAddDialogOpen, setIsAddDialogOpen, isEditDialogOpen, setIsEditDialogOpen, selectedProduct, setSelectedProduct } = useAdminPage();
-  const { categories, isLoading: isCategoriesLoading, addCategory, deleteCategory, isAddingCategory } = useCategories();
-  const [newCategoryName, setNewCategoryName] = useState('');
+  const { isDialogOpen, setIsDialogOpen, selectedProduct, setSelectedProduct } = useAdminPage();
 
   const { data: products, isLoading, error } = useQuery<Product[]>({ queryKey: ['admin-products'], queryFn: fetchProducts });
 
@@ -70,35 +53,9 @@ const ProductManagement = () => {
     },
   });
 
-  const handleProductAdded = () => {
+  const handleSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ['admin-products'] });
-    setIsAddDialogOpen(false);
-  };
-
-  const handleProductUpdated = () => {
-    queryClient.invalidateQueries({ queryKey: ['admin-products'] });
-    setIsEditDialogOpen(false);
-  };
-
-  const handleAddCategory = async () => {
-    try {
-      await addCategory(newCategoryName);
-      setNewCategoryName('');
-      toast({ title: 'Éxito', description: '¡Categoría añadida con éxito!' });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Ocurrió un error desconocido.";
-      toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
-    }
-  };
-
-  const handleDeleteCategory = async (id: number) => {
-    try {
-      await deleteCategory(id);
-      toast({ title: 'Éxito', description: '¡Categoría eliminada con éxito!' });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Ocurrió un error desconocido.";
-      toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
-    }
+    setIsDialogOpen(false);
   };
 
   return (
@@ -107,28 +64,21 @@ const ProductManagement = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Tabs defaultValue="products" className="space-y-4">
-      <TabsList>
-        <TabsTrigger value="products">Productos</TabsTrigger>
-        <TabsTrigger value="categories">Categorías</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="products">
         <Card className="bg-card/50 backdrop-blur-lg border border-border/50 rounded-lg shadow-2xl overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-3xl font-heading font-bold text-primary">Gestión de Productos</CardTitle>
               <CardDescription>Añade, edita o elimina productos de tu catálogo.</CardDescription>
             </div>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2 font-bold text-lg py-2 px-4 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full"><PlusCircle className="h-5 w-5"/> Añadir Producto</Button>
+                <Button onClick={() => setSelectedProduct(null)} className="gap-2 font-bold text-lg py-2 px-4 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full"><PlusCircle className="h-5 w-5"/> Añadir Producto</Button>
               </DialogTrigger>
               <DialogContent className="bg-card sm:max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle className="font-heading text-2xl text-gradient">Añadir un Nuevo Producto</DialogTitle>
+                  <DialogTitle className="font-heading text-2xl text-gradient">{selectedProduct ? 'Editar Producto' : 'Añadir un Nuevo Producto'}</DialogTitle>
                 </DialogHeader>
-                <AddProductForm onSuccess={handleProductAdded} />
+                <ProductForm onSuccess={handleSuccess} product={selectedProduct} />
               </DialogContent>
             </Dialog>
           </CardHeader>
@@ -145,7 +95,6 @@ const ProductManagement = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Nombre</TableHead>
-                      <TableHead>Categoría</TableHead>
                       <TableHead>Precio</TableHead>
                       <TableHead>Peso</TableHead>
                       <TableHead className="text-right">Acciones</TableHead>
@@ -155,19 +104,18 @@ const ProductManagement = () => {
                     {products.map(product => (
                       <TableRow key={product.id} className="hover:bg-muted/50 transition-colors">
                         <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell><Badge variant="outline">{product.categories?.name || 'N/A'}</Badge></TableCell>
                         <TableCell>${product.price.toFixed(2)}</TableCell>
                         <TableCell>{product.weight}</TableCell>
                         <TableCell className="text-right space-x-2">
-                          <Dialog open={isEditDialogOpen && selectedProduct?.id === product.id} onOpenChange={(isOpen) => { if (!isOpen) setSelectedProduct(null); setIsEditDialogOpen(isOpen);}}>
+                          <Dialog open={isDialogOpen && selectedProduct?.id === product.id} onOpenChange={(isOpen) => { if (!isOpen) setSelectedProduct(null); setIsDialogOpen(isOpen);}}>
                             <DialogTrigger asChild>
-                              <Button variant="outline" size="icon" onClick={() => setSelectedProduct(product)}><Edit className="h-4 w-4"/></Button>
+                              <Button variant="outline" size="icon" onClick={() => {setSelectedProduct(product); setIsDialogOpen(true);}}><Edit className="h-4 w-4"/></Button>
                             </DialogTrigger>
                             <DialogContent className="bg-card">
                               <DialogHeader>
                                 <DialogTitle className="font-heading text-2xl text-gradient">Editar Producto</DialogTitle>
                               </DialogHeader>
-                              {selectedProduct && <EditProductForm product={selectedProduct} onSuccess={handleProductUpdated} />}
+                              {selectedProduct && <ProductForm product={selectedProduct} onSuccess={handleSuccess} />}
                             </DialogContent>
                           </Dialog>
                           <AlertDialog>
@@ -196,60 +144,6 @@ const ProductManagement = () => {
             )}
           </CardContent>
         </Card>
-      </TabsContent>
-
-      <TabsContent value="categories">
-        <Card className="bg-card/50 backdrop-blur-lg border border-border/50 rounded-lg shadow-2xl overflow-hidden">
-          <CardHeader>
-            <CardTitle className="text-3xl font-heading font-bold text-primary">Gestión de Categorías</CardTitle>
-            <CardDescription>Añade o elimina categorías para tus productos.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex space-x-2 mb-6">
-              <Input
-                placeholder="Nombre de la nueva categoría"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                className="flex-grow bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all"
-              />
-              <Button onClick={handleAddCategory} disabled={!newCategoryName || isAddingCategory} className="font-bold text-lg py-2 px-4 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full">
-                {isAddingCategory ? 'Añadiendo...' : 'Añadir Categoría'}
-              </Button>
-            </div>
-            {isCategoriesLoading ? (
-              <div className="space-y-2">
-                {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full rounded-lg" />)}
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {categories?.map((category) => (
-                  <div key={category.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg shadow-sm">
-                    <span className="font-medium text-sm">{category.name}</span>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="bg-card">
-                        <AlertDialogHeader>
-                          <AlertDialogTitle className="font-heading text-2xl">¿Estás seguro?</AlertDialogTitle>
-                          <AlertDialogDescription>Se eliminará la categoría. Los productos de esta categoría no se eliminarán.</AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeleteCategory(category.id)}>Continuar</AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
     </motion.div>
   );
 };
