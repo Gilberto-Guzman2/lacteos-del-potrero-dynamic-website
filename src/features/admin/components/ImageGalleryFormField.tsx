@@ -9,7 +9,7 @@ const ImageGalleryFormField = ({ form, name, label, currentImages, onImageDelete
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel className="font-bold">{label}</FormLabel>
           <FormControl>
             <ImageGalleryInput
               {...field}

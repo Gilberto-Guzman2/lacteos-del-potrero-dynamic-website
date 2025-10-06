@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
@@ -101,24 +102,29 @@ const ProductManagement = () => {
   };
 
   return (
-    <Tabs defaultValue="products" className="space-y-4">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Tabs defaultValue="products" className="space-y-4">
       <TabsList>
         <TabsTrigger value="products">Productos</TabsTrigger>
         <TabsTrigger value="categories">Categorías</TabsTrigger>
       </TabsList>
 
       <TabsContent value="products">
-        <Card className="border-none shadow-lg">
+        <Card className="bg-card/50 backdrop-blur-lg border border-border/50 rounded-lg shadow-2xl overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-2xl font-heading text-gradient">Gestión de Productos</CardTitle>
+              <CardTitle className="text-3xl font-heading font-bold text-primary">Gestión de Productos</CardTitle>
               <CardDescription>Añade, edita o elimina productos de tu catálogo.</CardDescription>
             </div>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2"><PlusCircle className="h-5 w-5"/> Añadir Producto</Button>
+                <Button className="gap-2 font-bold text-lg py-2 px-4 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full"><PlusCircle className="h-5 w-5"/> Añadir Producto</Button>
               </DialogTrigger>
-              <DialogContent className="bg-card">
+              <DialogContent className="bg-card sm:max-w-2xl">
                 <DialogHeader>
                   <DialogTitle className="font-heading text-2xl text-gradient">Añadir un Nuevo Producto</DialogTitle>
                 </DialogHeader>
@@ -193,9 +199,9 @@ const ProductManagement = () => {
       </TabsContent>
 
       <TabsContent value="categories">
-        <Card className="border-none shadow-lg">
+        <Card className="bg-card/50 backdrop-blur-lg border border-border/50 rounded-lg shadow-2xl overflow-hidden">
           <CardHeader>
-            <CardTitle className="text-2xl font-heading text-gradient">Gestión de Categorías</CardTitle>
+            <CardTitle className="text-3xl font-heading font-bold text-primary">Gestión de Categorías</CardTitle>
             <CardDescription>Añade o elimina categorías para tus productos.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -206,7 +212,7 @@ const ProductManagement = () => {
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 className="flex-grow bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all"
               />
-              <Button onClick={handleAddCategory} disabled={!newCategoryName || isAddingCategory}>
+              <Button onClick={handleAddCategory} disabled={!newCategoryName || isAddingCategory} className="font-bold text-lg py-2 px-4 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full">
                 {isAddingCategory ? 'Añadiendo...' : 'Añadir Categoría'}
               </Button>
             </div>
@@ -244,6 +250,7 @@ const ProductManagement = () => {
         </Card>
       </TabsContent>
     </Tabs>
+    </motion.div>
   );
 };
 

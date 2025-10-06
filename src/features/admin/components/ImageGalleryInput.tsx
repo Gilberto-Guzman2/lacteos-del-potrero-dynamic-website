@@ -21,7 +21,7 @@ export const ImageGalleryInput = React.forwardRef<HTMLDivElement, ImageGalleryIn
   return (
     <div ref={ref}>
       <div className="flex justify-end mb-4">
-        <Button onClick={() => setIsAddModalOpen(true)} type="button"><Plus className="mr-2" />Agregar Imagen</Button>
+        <Button onClick={() => setIsAddModalOpen(true)} type="button" className="font-bold text-lg py-2 px-4 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full"><Plus className="mr-2" />Agregar Imagen</Button>
       </div>
       <AddImageModal
         isOpen={isAddModalOpen}

@@ -72,7 +72,7 @@ const ImageInput = React.forwardRef<HTMLInputElement, ImageInputProps>(
       >
 
         <div 
-          className={`relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-300 ${
+          className={`relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-300 ${
             isDragging 
               ? 'border-primary bg-primary/10' 
               : 'border-muted-foreground/20 bg-muted/50 hover:bg-muted'

@@ -38,7 +38,7 @@ const categoryDisplayNames = {
 };
 
 const ProductGrid = () => {
-  const { content, isLoading: isContentLoading } = useSiteContent('catalog_page');
+  const { data: content, isLoading: isContentLoading } = useSiteContent('catalog');
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
@@ -113,7 +113,7 @@ const ProductGrid = () => {
           </div>
           <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-8" />
           <div className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {isContentLoading ? <Skeleton className="h-6 w-3/4 mx-auto" /> : content?.description}
+            {isContentLoading ? <Skeleton className="h-6 w-3/4 mx-auto" /> : content?.subtitle}
           </div>
         </motion.div>
 

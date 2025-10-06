@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -109,98 +110,118 @@ const EditProductForm: React.FC<EditProductFormProps> = ({ product, onSuccess })
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nombre del Producto</FormLabel>
-              <FormControl>
-                <Input placeholder="Queso Fresco" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Descripción</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Delicioso queso fresco artesanal..." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Precio</FormLabel>
-              <FormControl>
-                <Input type="number" step="0.01" placeholder="120.00" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="weight"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Peso</FormLabel>
-              <FormControl>
-                <Input placeholder="500g" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="category_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Categoría</FormLabel>
-              <Select onValueChange={value => field.onChange(Number(value))} value={field.value ? String(field.value) : ''} disabled={isCategoriesLoading}>
+      <motion.form
+        variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+        initial="hidden"
+        animate="visible"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4"
+      >
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-heading text-gradient text-lg">Nombre del Producto</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una categoría" />
-                  </SelectTrigger>
+                  <Input placeholder="Queso Fresco" {...field} className="bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all" />
                 </FormControl>
-                <SelectContent>
-                  {categories?.map((category) => (
-                    <SelectItem key={category.id} value={String(category.id)}>{category.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field: { onChange, value, ...rest } }) => (
-            <FormItem>
-              <FormLabel>Imagen del Producto</FormLabel>
-              <FormControl>
-                <ImageInput onChange={onChange} currentImageUrl={product.image_url} {...rest} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" disabled={mutation.isPending}>
-          {mutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
-        </Button>
-      </form>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-heading text-gradient text-lg">Descripción</FormLabel>
+                <FormControl>
+                  <Textarea placeholder="Delicioso queso fresco artesanal..." {...field} className="bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          <FormField
+            control={form.control}
+            name="price"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-heading text-gradient text-lg">Precio</FormLabel>
+                <FormControl>
+                  <Input type="number" step="0.01" placeholder="120.00" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} className="bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          <FormField
+            control={form.control}
+            name="weight"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-heading text-gradient text-lg">Peso</FormLabel>
+                <FormControl>
+                  <Input placeholder="500g" {...field} className="bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          <FormField
+            control={form.control}
+            name="category_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-heading text-gradient text-lg">Categoría</FormLabel>
+                <Select onValueChange={value => field.onChange(Number(value))} value={field.value ? String(field.value) : ''} disabled={isCategoriesLoading}>
+                  <FormControl>
+                    <SelectTrigger className="bg-muted/50 border-0 focus:ring-2 focus:ring-primary transition-all">
+                      <SelectValue placeholder="Selecciona una categoría" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {categories?.map((category) => (
+                      <SelectItem key={category.id} value={String(category.id)}>{category.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field: { onChange, value, ...rest } }) => (
+              <FormItem>
+                <FormLabel className="font-heading text-gradient text-lg">Imagen del Producto</FormLabel>
+                <FormControl>
+                  <ImageInput onChange={onChange} currentImageUrl={product.image_url} {...rest} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          <Button type="submit" className="w-full font-bold text-lg py-6 gradient-coita text-white hover:opacity-90 transition-all duration-300 shadow-lg rounded-full" disabled={mutation.isPending}>
+            {mutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
+          </Button>
+        </motion.div>
+      </motion.form>
     </Form>
   );
 };

@@ -46,7 +46,7 @@ const AdminLayout = () => {
         >
           <div className="h-full">
             <header className="flex justify-between items-center mb-4">
-              <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+              <Button variant="outline" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                 {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </Button>
               <div className="flex items-center space-x-2">
