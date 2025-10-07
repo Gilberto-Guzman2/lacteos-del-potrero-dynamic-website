@@ -1,74 +1,75 @@
+
 import React from 'react';
 import * as z from 'zod';
 import { useSiteContent } from '@/hooks/use-site-content';
+import { Skeleton } from '@/components/ui/skeleton';
 import AdminPageWrapper from '../components/AdminPageWrapper';
-import AboutSectionForm from '../components/AboutSectionForm'; // Reusing for simplicity, rename if needed
+import ListManagementForm from '../components/ListManagementForm';
 
-const contactSchema = z.object({
-  title: z.string().min(1, 'El título es requerido'),
-  subtitle: z.string().min(1, 'El subtítulo es requerido'),
-  tuxtla_title: z.string().min(1, 'El título de la sucursal de Tuxtla es requerido'),
-  tuxtla_address: z.string().min(1, 'La dirección de la sucursal de Tuxtla es requerida'),
-  tuxtla_hours: z.string().min(1, 'El horario de la sucursal de Tuxtla es requerido'),
-  ocozocoautla_title: z.string().min(1, 'El título de la sucursal de Ocozocoautla es requerido'),
-  ocozocoautla_address: z.string().min(1, 'La dirección de la sucursal de Ocozocoautla es requerida'),
-  ocozocoautla_hours: z.string().min(1, 'El horario de la sucursal de Ocozocoautla es requerido'),
-  phone_title: z.string().min(1, 'El título del teléfono es requerido'),
-  phone_number: z.string().min(1, 'El número de teléfono es requerido'),
-  email_title: z.string().min(1, 'El título del correo electrónico es requerido'),
-  email_address: z.string().email('Debe ser un correo electrónico válido').min(1, 'El correo electrónico es requerido'),
+const locationSchema = z.object({
+  name: z.string().min(1, "El nombre es requerido"),
+  address: z.string().min(1, "La dirección es requerida"),
+  hours: z.string().min(1, "El horario es requerido"),
+});
+
+const contactMethodSchema = z.object({
+  type: z.string().min(1, "El tipo es requerido"),
+  value: z.string().min(1, "El valor es requerido"),
+  description: z.string().optional(),
 });
 
 const ContactPage = () => {
-  const { content, isLoading } = useSiteContent('contact_page');
+  const { data: content, isLoading: isContentLoading } = useSiteContent('contact');
 
-  if (isLoading) {
+  if (isContentLoading) {
     return (
-      <div className="space-y-8">
-        <div className="h-64 w-full bg-muted rounded-lg animate-pulse" />
-      </div>
+      <AdminPageWrapper
+        title="Editar Página de Contacto"
+        description="Añade, edita o elimina dinámicamente las sucursales y métodos de contacto."
+      >
+        <div className="space-y-8">
+          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </AdminPageWrapper>
     );
   }
 
   return (
     <AdminPageWrapper
       title="Editar Página de Contacto"
-      description="Actualiza el contenido de la sección de Contacto."
+      description="Añade, edita o elimina dinámicamente las sucursales y métodos de contacto."
     >
-      <AboutSectionForm
-        sectionKey="contact_page"
-        sectionTitle="Contenido de Contacto"
-        sectionDescription="Actualiza el título, subtítulo, información de sucursales y datos de contacto."
-        formSchema={contactSchema}
-        defaultValues={{
-          title: content?.title || '',
-          subtitle: content?.subtitle || '',
-          tuxtla_title: content?.tuxtla_title || '',
-          tuxtla_address: content?.tuxtla_address || '',
-          tuxtla_hours: content?.tuxtla_hours || '',
-          ocozocoautla_title: content?.ocozocoautla_title || '',
-          ocozocoautla_address: content?.ocozocoautla_address || '',
-          ocozocoautla_hours: content?.ocozocoautla_hours || '',
-          phone_title: content?.phone_title || '',
-          phone_number: content?.phone_number || '',
-          email_title: content?.email_title || '',
-          email_address: content?.email_address || '',
-        }}
-        fields={[
-          { name: 'title', label: 'Título' },
-          { name: 'subtitle', label: 'Subtítulo', type: 'textarea' },
-          { name: 'tuxtla_title', label: 'Título Sucursal Tuxtla' },
-          { name: 'tuxtla_address', label: 'Dirección Sucursal Tuxtla', type: 'textarea' },
-          { name: 'tuxtla_hours', label: 'Horario Sucursal Tuxtla' },
-          { name: 'ocozocoautla_title', label: 'Título Sucursal Ocozocoautla' },
-          { name: 'ocozocoautla_address', label: 'Dirección Sucursal Ocozocoautla', type: 'textarea' },
-          { name: 'ocozocoautla_hours', label: 'Horario Sucursal Ocozocoautla' },
-          { name: 'phone_title', label: 'Título Teléfono' },
-          { name: 'phone_number', label: 'Número de Teléfono' },
-          { name: 'email_title', label: 'Título Correo Electrónico' },
-          { name: 'email_address', label: 'Correo Electrónico' },
-        ]}
-      />
+      <div className="space-y-8">
+        <ListManagementForm
+          sectionKey="contact"
+          elementKey="locations"
+          sectionTitle="Sucursales"
+          sectionDescription="Gestiona las direcciones y horarios de tus sucursales."
+          itemSchema={locationSchema}
+          defaultValues={content?.locations || []}
+          formFields={[
+            { name: 'name', label: 'Nombre de la Sucursal' },
+            { name: 'address', label: 'Dirección' },
+            { name: 'hours', label: 'Horario' },
+          ]}
+          itemSingularName="Sucursal"
+        />
+        <ListManagementForm
+          sectionKey="contact"
+          elementKey="contact_methods"
+          sectionTitle="Información de Contacto"
+          sectionDescription="Gestiona los métodos de contacto como teléfonos y correos."
+          itemSchema={contactMethodSchema}
+          defaultValues={content?.contact_methods || []}
+          formFields={[
+            { name: 'type', label: 'Tipo' },
+            { name: 'value', label: 'Valor' },
+            { name: 'description', label: 'Descripción' },
+          ]}
+          itemSingularName="Método de Contacto"
+        />
+      </div>
     </AdminPageWrapper>
   );
 };
