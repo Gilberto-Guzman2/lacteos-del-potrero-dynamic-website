@@ -1,11 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
-import { useContactContent } from '@/hooks/use-contact-content';
+import { useSiteContent } from '@/hooks/use-site-content';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const ContactSection = () => {
-  const { data: content, isLoading } = useContactContent();
+  const { data: pageContent, isLoading: isPageContentLoading } = useSiteContent('contact_page');
+  const { data: content, isLoading: isContentLoading } = useSiteContent('contact');
+  const isLoading = isPageContentLoading || isContentLoading;
 
   const getIcon = (type: string) => {
     switch (type.toLowerCase()) {
@@ -29,12 +31,16 @@ const ContactSection = () => {
           className="text-center mb-16"
         >
           <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gradient">
-            {isLoading ? <Skeleton className="h-12 w-1/2 mx-auto" /> : content?.title || 'Contáctanos'}
+            {isLoading ? <Skeleton className="h-12 w-1/2 mx-auto" /> : pageContent?.title || 'Contáctanos'}
           </h2>
           <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-8" />
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {isLoading ? <Skeleton className="h-6 w-3/4 mx-auto" /> : content?.subtitle || 'Estamos para servirte. Encuéntranos en nuestras sucursales o contáctanos directamente.'}
-          </p>
+          {isLoading ? (
+            <Skeleton className="h-6 w-3/4 mx-auto" />
+          ) : (
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {pageContent?.subtitle || 'Estamos para servirte. Encuéntranos en nuestras sucursales o contáctanos directamente.'}
+            </p>
+          )}
         </motion.div>
 
         {/* Store Locations */}
@@ -42,7 +48,7 @@ const ContactSection = () => {
           {isLoading ? (
             <><Skeleton className="h-48 w-full rounded-xl" /><Skeleton className="h-48 w-full rounded-xl" /></>
           ) : (
-            content?.locations.map((location, index) => (
+            content?.locations && content.locations.map((location, index) => (
               <motion.div
                 key={location.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -71,12 +77,12 @@ const ContactSection = () => {
           {isLoading ? (
             <><Skeleton className="h-32 w-full rounded-xl" /><Skeleton className="h-32 w-full rounded-xl" /></>
           ) : (
-            content?.contact_methods.map((method, index) => (
+            content?.contact_methods && content.contact_methods.map((method, index) => (
               <motion.div
                 key={method.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: (content.locations.length + index) * 0.1 }}
+                transition={{ duration: 0.6, delay: (content.locations?.length || 0 + index) * 0.1 }}
                 className="text-center p-6 rounded-xl bg-gradient-card shadow-lg border border-border"
               >
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">

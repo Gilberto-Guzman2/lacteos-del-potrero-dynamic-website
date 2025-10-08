@@ -44,7 +44,7 @@ const ProductImageGallery = () => {
                   onClick={() => setSelectedImage(image.url)}
                 >
                   <LazyImage
-                    src={image.url}
+                    src={`${image.url}?t=${new Date().getTime()}`}
                     alt={image.alt_text}
                     className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                     width={400}
@@ -56,7 +56,7 @@ const ProductImageGallery = () => {
                 {selectedImage && (
                   <div className="relative w-full h-full rounded-md overflow-hidden">
                     <LazyImage
-                      src={selectedImage}
+                      src={`${selectedImage}?t=${new Date().getTime()}`}
                       alt="Enlarged product image"
                       className="object-contain w-full h-full"
                       width={1200}

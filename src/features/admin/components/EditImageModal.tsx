@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import ImageInput from './ImageInput';
 
@@ -31,14 +31,17 @@ const EditImageModal: React.FC<EditImageModalProps> = ({ isOpen, onClose, onSave
           className="space-y-6"
         >
           <DialogHeader>
-            <motion.h1
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-3xl font-heading font-bold text-primary"
-            >
-              Reemplazar Imagen
-            </motion.h1>
+            <DialogTitle asChild>
+              <motion.h1
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-3xl font-heading font-bold text-primary"
+              >
+                Reemplazar Imagen
+              </motion.h1>
+            </DialogTitle>
+            <DialogDescription />
           </DialogHeader>
           <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
             <ImageInput onChange={setFile} />

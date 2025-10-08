@@ -11,7 +11,7 @@ import { useFaqs } from '@/hooks/use-faqs';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const FAQSection = () => {
-  const { content, isLoading: isContentLoading } = useSiteContent('faq_page');
+  const { data: content, isLoading: isContentLoading } = useSiteContent('faq_page');
   const { faqs, isLoading: isFaqsLoading } = useFaqs();
 
   return (

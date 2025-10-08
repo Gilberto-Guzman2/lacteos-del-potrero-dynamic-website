@@ -6,6 +6,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import AdminPageWrapper from '../components/AdminPageWrapper';
 import ListManagementForm from '../components/ListManagementForm';
 
+import AboutSectionForm from '../components/AboutSectionForm';
+
+const contactPageSchema = z.object({
+  title: z.string().min(1, 'El título es requerido'),
+  subtitle: z.string().min(1, 'El subtítulo es requerido'),
+});
+
 const locationSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
   address: z.string().min(1, "La dirección es requerida"),
@@ -19,19 +26,16 @@ const contactMethodSchema = z.object({
 });
 
 const ContactPage = () => {
-  const { data: content, isLoading: isContentLoading } = useSiteContent('contact');
+  const { data: pageContent, isLoading: isContentLoading } = useSiteContent('contact_page');
+  const { data: content, isLoading: isListContentLoading } = useSiteContent('contact');
 
-  if (isContentLoading) {
+  if (isContentLoading || isListContentLoading) {
     return (
-      <AdminPageWrapper
-        title="Editar Página de Contacto"
-        description="Añade, edita o elimina dinámicamente las sucursales y métodos de contacto."
-      >
-        <div className="space-y-8">
-          <Skeleton className="h-64 w-full" />
-          <Skeleton className="h-64 w-full" />
-        </div>
-      </AdminPageWrapper>
+      <div className="space-y-8">
+        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
     );
   }
 
@@ -41,6 +45,21 @@ const ContactPage = () => {
       description="Añade, edita o elimina dinámicamente las sucursales y métodos de contacto."
     >
       <div className="space-y-8">
+        <AboutSectionForm
+          sectionKey="contact_page"
+          sectionTitle="Contenido de la Página de Contacto"
+          sectionDescription="Actualiza el título y subtítulo de la sección de Contacto."
+          formSchema={contactPageSchema}
+          defaultValues={{
+            title: pageContent?.title || '',
+            subtitle: pageContent?.subtitle || '',
+          }}
+          fields={[
+            { name: 'title', label: 'Título' },
+            { name: 'subtitle', label: 'Subtítulo', type: 'textarea' },
+          ]}
+        />
+
         <ListManagementForm
           sectionKey="contact"
           elementKey="locations"

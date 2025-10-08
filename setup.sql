@@ -92,6 +92,31 @@ CREATE POLICY "Allow public read access to faqs" ON faqs
 FOR SELECT
 USING (true);
 
+DROP POLICY IF EXISTS "Allow authenticated users to insert faqs" ON faqs;
+CREATE POLICY "Allow authenticated users to insert faqs" ON faqs
+FOR INSERT TO authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow authenticated users to update faqs" ON faqs;
+CREATE POLICY "Allow authenticated users to update faqs" ON faqs
+FOR UPDATE TO authenticated
+USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow authenticated users to delete faqs" ON faqs;
+CREATE POLICY "Allow authenticated users to delete faqs" ON faqs
+FOR DELETE TO authenticated
+USING (true);
+
+-- Insert placeholder data for faq page title and subtitle
+INSERT INTO site_content (section, element, content)
+VALUES ('faq_page', 'title', 'Preguntas Frecuentes'), ('faq_page', 'subtitle', 'Encuentra respuestas a las preguntas más comunes.')
+ON CONFLICT (section, element) DO NOTHING;
+
+-- Insert placeholder data for contact page title and subtitle
+INSERT INTO site_content (section, element, content)
+VALUES ('contact_page', 'title', 'Contáctanos'), ('contact_page', 'subtitle', 'Estamos aquí para ayudarte. Ponte en contacto con nosotros a través de cualquiera de los siguientes medios.')
+ON CONFLICT (section, element) DO NOTHING;
+
 -- Create a bucket for images
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('website_images', 'website_images', true)

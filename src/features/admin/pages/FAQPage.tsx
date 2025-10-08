@@ -22,7 +22,7 @@ const faqPageSchema = z.object({
 });
 
 const FAQPage = () => {
-  const { content, isLoading: isContentLoading } = useSiteContent('faq_page');
+  const { data: content, isLoading: isContentLoading } = useSiteContent('faq_page');
   const { faqs, isLoading: isFaqsLoading, addFaq, updateFaq, deleteFaq } = useFaqs();
   const { toast } = useToast();
 
@@ -129,7 +129,7 @@ const FAQPage = () => {
                         </Dialog>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="destructive" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10">
+                            <Button variant="destructive" size="icon">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </AlertDialogTrigger>

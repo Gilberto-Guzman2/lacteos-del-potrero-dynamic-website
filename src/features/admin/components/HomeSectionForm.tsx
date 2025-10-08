@@ -99,7 +99,6 @@ const HomeSectionForm: React.FC<HomeSectionFormProps> = ({
         .filter(field => values[field.name] !== undefined)
         .map(field => ({ section: sectionKey, element: field.name, content: values[field.name] }));
 
-      console.log('Submitting updates:', updates);
 
       if (updates.length > 0) {
         await contentMutation.mutateAsync(updates);

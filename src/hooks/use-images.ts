@@ -10,8 +10,9 @@ export const useImages = (section: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('images')
-        .select('name,url')
-        .eq('section', section);
+        .select('name,url,id')
+        .eq('section', section)
+        .order('id');
 
       if (error) {
         throw new Error(error.message);

@@ -66,13 +66,13 @@ export const ImageGalleryInput = React.forwardRef<HTMLDivElement, ImageGalleryIn
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
             >
-              <img src={image.url} alt={image.name} className="w-full h-auto rounded-lg" />
+              <img src={`${image.url}?t=${new Date().getTime()}`} alt={image.name} className="w-full h-auto rounded-lg" />
               <div className="absolute inset-0 bg-black/50 flex items-start justify-end p-2 opacity-0 group-hover:opacity-100 transition-opacity space-x-2">
                 <Button
                   type="button"
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8 bg-background/80 hover:bg-background"
+                  className="h-8 w-8 bg-background/80 hover:bg-accent"
                   title="Replace Image"
                   onClick={() => handleOpenEditModal(image)}
                 >

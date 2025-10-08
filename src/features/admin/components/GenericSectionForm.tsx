@@ -54,25 +54,24 @@ const updateImageRecord = async (supabase: any, name: string, section: string, u
   return data;
 };
 
+import { v4 as uuidv4 } from 'uuid';
+
 const addImage = async (supabase: any, section: string, file: File) => {
-  const imageName = `${section}/${file.name}`;
+  if (!section || typeof section !== 'string') {
+    throw new Error('Image section is missing or invalid.');
+  }
+  const fileExtension = file.name.split('.').pop();
+  const imageName = `${section}/${uuidv4()}.${fileExtension}`;
   const imageUrl = await uploadImage(supabase, file, imageName);
   await updateImageRecord(supabase, imageName, section, imageUrl);
   return imageUrl;
 };
 
 const updateImage = async (supabase: any, imageName: string, file: File) => {
-  const { error: deleteError } = await supabase.storage.from('website_images').remove([`public/${imageName}`]);
-  // Don't throw error if file doesn't exist
-  // if (deleteError) throw new Error(deleteError.message);
+  // Overwrite the existing image in storage
+  const imageUrl = await uploadImage(supabase, file, imageName);
 
-  const { data, error } = await supabase.storage
-    .from('website_images')
-    .upload(`public/${imageName}`, file, { cacheControl: '3600', upsert: true });
-  if (error) throw new Error(error.message);
-  const { data: publicUrlData } = supabase.storage.from('website_images').getPublicUrl(data.path);
-  const imageUrl = publicUrlData.publicUrl;
-
+  // Update the URL in the database to ensure it's current
   const { error: dbError } = await supabase.from('images').update({ url: imageUrl }).match({ name: imageName });
   if (dbError) throw new Error(dbError.message);
 
@@ -147,9 +146,11 @@ const GenericSectionForm: React.FC<GenericSectionFormProps> = ({
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const updates = fields
-      .filter(field => values[field.name] !== undefined)
-      .map(field => ({ section: sectionKey, element: field.name, content: values[field.name] }));
+    const updates = Object.keys(values).map(key => ({
+      section: sectionKey,
+      element: key,
+      content: values[key]
+    }));
 
     if (updates.length > 0) {
       await contentMutation.mutateAsync(updates);

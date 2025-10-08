@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Product } from '../types/Product';
 
+import { v4 as uuidv4 } from 'uuid';
+
 const productSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
   description: z.string().min(1, 'La descripción es requerida'),
@@ -45,7 +47,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSuccess }) => {
 
       if (values.image && values.image.length > 0) {
         const imageFile = values.image[0];
-        const filePath = `products/${Date.now()}_${imageFile.name}`;
+        const fileExtension = imageFile.name.split('.').pop();
+        const filePath = `products/${uuidv4()}.${fileExtension}`;
 
         const { error: uploadError } = await supabase.storage
           .from('website_images')

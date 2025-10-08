@@ -11,7 +11,7 @@ import { PlusCircle, Edit, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
@@ -181,14 +181,10 @@ const ItemDialog: React.FC<ItemDialogProps> = ({ isOpen, onClose, onSave, item, 
         className="space-y-6"
       >
         <DialogHeader>
-          <motion.h1
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-3xl font-heading font-bold text-primary"
-          >
+          <DialogTitle className="font-heading text-2xl text-gradient">
             {item ? 'Editar' : 'Añadir'} {itemSingularName}
-          </motion.h1>
+          </DialogTitle>
+          <DialogDescription />
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

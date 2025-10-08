@@ -11,6 +11,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 
+import { v4 as uuidv4 } from 'uuid';
+
 const formSchema = z.object({
   image: z.instanceof(FileList).optional(),
   alt_text: z.string().min(1, 'El texto alternativo es requerido'),
@@ -53,15 +55,16 @@ const EditImageForm: React.FC<EditImageFormProps> = ({ image, onSuccess }) => {
 
       if (values.image && values.image.length > 0) {
         const imageFile = values.image[0];
-        const filePath = `gallery/${Date.now()}_${imageFile.name}`;
+        const fileExtension = imageFile.name.split('.').pop();
+        const newFileName = `gallery/${uuidv4()}.${fileExtension}`;
 
         // Upload new image
         const { error: uploadError } = await supabase.storage
           .from('website_images')
-          .upload(filePath, imageFile);
+          .upload(newFileName, imageFile);
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage.from('website_images').getPublicUrl(filePath);
+        const { data: { publicUrl } } = supabase.storage.from('website_images').getPublicUrl(newFileName);
         newImageUrl = publicUrl;
 
         // Delete old image from storage
@@ -74,6 +77,7 @@ const EditImageForm: React.FC<EditImageFormProps> = ({ image, onSuccess }) => {
       await supabase.from('images').update({
         url: newImageUrl,
         alt_text: values.alt_text,
+        name: newFileName, // Update the name to the new unique name
       }).eq('name', image.name);
 
       queryClient.invalidateQueries({ queryKey: ['images', 'gallery'] });

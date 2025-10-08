@@ -11,6 +11,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 
+import { v4 as uuidv4 } from 'uuid';
+
 const formSchema = z.object({
   image: z.instanceof(FileList).refine(files => files.length > 0, 'La imagen es requerida'),
   alt_text: z.string().min(1, 'El texto alternativo es requerido'),
@@ -49,7 +51,8 @@ const AddImageForm: React.FC<AddImageFormProps> = ({ onSuccess }) => {
     setIsUploading(true);
     try {
       const imageFile = values.image[0];
-      const fileName = `gallery/${Date.now()}_${imageFile.name}`;
+      const fileExtension = imageFile.name.split('.').pop();
+      const fileName = `gallery/${uuidv4()}.${fileExtension}`;
 
       const { error: uploadError } = await supabase.storage
         .from('website_images')
